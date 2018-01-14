@@ -15,7 +15,7 @@ public class NeedsToBeYourPionRule extends Rule {
 		Player player = board.getPlayers().get(playerIndex);
 		
 		if (!player.getPion().equals(board.getSquare(oldSquare).getPion())) {
-			System.out.println("This isn't your pion. You are " + player.getPion() + "!");
+			System.out.println("You don't have a piece on square " + oldSquare + ". You are " + player.getPion() + "!");
 			callback.call(false);
 			return;
 		}

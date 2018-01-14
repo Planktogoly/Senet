@@ -90,6 +90,10 @@ public class Senet {
 			board.set(playerIndex, 9, 9 + sticks);
 			playerIndex = playerIndex == 0 ? 1 : 0;
 		} else {
+			playerIndex = playerIndex == 0 ? 1 : 0;
+			Player player = players.get(playerIndex);
+			player.setPion("O");
+			
 			board.createBoard();
 			board.print();
 		}

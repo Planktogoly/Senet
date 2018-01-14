@@ -59,17 +59,19 @@ public class Board {
 	public boolean set(int playerIndex, int oldPlace, int newPlace) {
 		passesRules = true;
 		
-		for (Rule rule : rules) {			
+		for (Rule rule : rules) {		
+			if (!passesRules) return false;
+			
 			rule.run(new Callback<Boolean>() {
 				
 				@Override
 				public void call(Boolean passed) {
-					if (!passed) passesRules = false;
+					if (!passed) {
+						passesRules = false;
+					}
 				}
 			}, playerIndex, oldPlace, newPlace);
 		}
-		
-		if (!passesRules) return false;
 		
 		Square oldSquare = getSquare(oldPlace);
 		Square newSquare = getSquare(newPlace);
@@ -172,6 +174,7 @@ public class Board {
 		testPositions.put(1, testPosition1);
 		
 		TestPosition testPosition2 = new TestPosition();
+		testPosition2.addPosition(11, "X");
 		testPosition2.addPosition(21, "O");
 		testPosition2.addPosition(22, "O");
 		testPosition2.addPosition(23, "O");
