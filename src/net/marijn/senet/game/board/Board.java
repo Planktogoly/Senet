@@ -56,11 +56,11 @@ public class Board {
 	
 	private boolean passesRules = true;
 	
-	public boolean set(int playerIndex, int oldPlace, int newPlace) {
-		passesRules = true;
+	public boolean set(int playerIndex, int oldPlace, int newPlace, int sticks) {
+		passesRules = true;	
 		
 		for (Rule rule : rules) {		
-			if (!passesRules) return false;
+			if (!passesRules) continue;
 			
 			rule.run(new Callback<Boolean>() {
 				
@@ -70,7 +70,11 @@ public class Board {
 						passesRules = false;
 					}
 				}
-			}, playerIndex, oldPlace, newPlace);
+			}, playerIndex, oldPlace, newPlace, true);
+		}
+		
+		if (!passesRules) {
+			return false;
 		}
 		
 		Square oldSquare = getSquare(oldPlace);
@@ -86,8 +90,51 @@ public class Board {
 			newSquare.setPion(".");
 		}
 		
-		print();
+		if (!(newPlace == 27)) {
+			print();
+		}
 		return true;
+	}
+	
+	public boolean checkifPlayerCanSetAPion(int playerIndex) {
+		String pion = getPlayers().get(playerIndex).getPion();
+		
+		for (int i = 0; i < 30; i++) {
+			Square square = squares.get(i);
+			
+			System.out.println(square.getPion() + i);
+			if (square.getPion().equals(pion)) {
+				for (int j = 0; j < 6; j++) {
+					if (j == 5) continue;
+					
+					passesRules = true;	
+					
+					for (Rule rule : rules) {		
+						if (!passesRules) continue;
+						if (rule.getClass().getName().equalsIgnoreCase("net.marijn.senet.rules.PitFallRule")) continue;
+						
+						rule.run(new Callback<Boolean>() {
+							
+							@Override
+							public void call(Boolean passed) {
+								if (!passed) {
+									passesRules = false;
+									System.out.println(rule.getClass().getName());
+								}
+							}
+						}, playerIndex, i + 1, (i + 1) + j, false);
+					}
+					
+					if (!passesRules) {
+						break;
+					}
+				}
+				
+				if (passesRules) return true;
+			}
+		}
+		
+		return false;
 	}
 
 	public void print() {

@@ -12,13 +12,13 @@ public class CantBeAttackedRule extends Rule {
 	}
 
 	@Override
-	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare) {
+	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare, boolean checkRun) {
 		if (newSquare == 26 || newSquare == 28 || newSquare == 29) {
 			Square newPlace = board.getSquare(newSquare);
 			Player player = board.getPlayers().get(playerIndex);
 			
 			if (!".".equals(newPlace.getPion()) && !newPlace.getPion().equals(player.getPion())) {
-				System.out.println("You can't attack pions on this place!");
+				if (checkRun) System.out.println("You can't attack pions on this place!");
 				callback.call(false);
 				return;
 			}		

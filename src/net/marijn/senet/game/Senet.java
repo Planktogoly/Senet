@@ -43,11 +43,22 @@ public class Senet {
 		}
 
 		System.out.println("Enter the name of the first player:");
-		addPlayer(scanner.next());
-		scanner.nextLine();
+		addPlayer(scanner.nextLine());
 		System.out.println("Enter the name of the second player:");
-		addPlayer(scanner.next());
-		scanner.nextLine();
+		
+		boolean notTheSameName = false;
+		while (!notTheSameName) {
+			String name = scanner.nextLine();
+			
+			if (!name.equals(players.get(0).getName())) {
+				notTheSameName = true;
+				addPlayer(name);
+				continue;
+			}
+			
+			System.out.println("You cannot have the same name!");
+			System.out.println("Enter the name of the second player:");
+		}
 
 		boolean rightPoints = false;
 		while (!rightPoints) {
@@ -74,7 +85,7 @@ public class Senet {
 		players.get(playerIndex).setPion("X");
 		
 		if (testPosition == -1) {
-			board.set(playerIndex, 10, 11);
+			board.set(playerIndex, 10, 11, 0);
 			
 			playerIndex = playerIndex == 0 ? 1 : 0;
 
@@ -87,7 +98,7 @@ public class Senet {
 
 			int sticks = Dice.throwSticks();
 			System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + sticks);
-			board.set(playerIndex, 9, 9 + sticks);
+			board.set(playerIndex, 9, 9 + sticks, sticks);
 			playerIndex = playerIndex == 0 ? 1 : 0;
 		} else {
 			playerIndex = playerIndex == 0 ? 1 : 0;
@@ -134,22 +145,26 @@ public class Senet {
 		int sticks = Dice.throwSticks();
 		System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + sticks);
 		
-		boolean rightAnswer = false;
-		while (!rightAnswer) {
-			System.out.println(player.getName() + " (" + player.getPion() + "), which piece do you want to move?");
-			String rawAnswer = scanner.nextLine();
-			
-			int answer = Utils.isAnswerANumber(rawAnswer);
-			if (answer == -1) continue;
-			
-			if (answer <= 0 || answer > 30) {
-				System.out.println("The piece place needs to be higher than zero and lower than thirty!");
-				continue;
+		if (!board.checkifPlayerCanSetAPion(playerIndex)) {
+			System.out.println("You can't set a pion!");
+		} else {
+			boolean rightAnswer = false;
+			while (!rightAnswer) {
+				System.out.println(player.getName() + " (" + player.getPion() + "), which piece do you want to move?");
+				String rawAnswer = scanner.nextLine();
+				
+				int answer = Utils.isAnswerANumber(rawAnswer);
+				if (answer == -1) continue;
+				
+				if (answer <= 0 || answer > 30) {
+					System.out.println("The piece place needs to be higher than zero and lower than thirty!");
+					continue;
+				}
+				
+				if (board.set(playerIndex, answer, answer + sticks, sticks)) rightAnswer = true;
+				
+				checkIfSomeoneWon();
 			}
-			
-			if (board.set(playerIndex, answer, answer + sticks)) rightAnswer = true;
-			
-			checkIfSomeoneWon();
 		}
 		
 		if (sticks == 2 || sticks == 3) playerIndex = playerIndex == 0 ? 1 : 0;

@@ -10,9 +10,9 @@ public class NeedsToHaveAPionRule extends Rule {
 	}
 
 	@Override
-	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare) {
+	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare, boolean checkRun) {
 		if (".".equals(board.getSquare(oldSquare).getPion())) {
-			System.out.println("You don't have a piece on square " + oldSquare + ".");
+			if (checkRun) System.out.println("You don't have a piece on square " + oldSquare + ".");
 			callback.call(false);
 			return;
 		}	

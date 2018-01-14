@@ -11,7 +11,7 @@ public class BlockadeRule extends Rule {
 	}
 
 	@Override
-	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare) {
+	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare, boolean checkRun) {
 		String enemyPion = board.getPlayers().get(playerIndex == 0 ? 1 : 0).getPion();
 		
 		int count = 0;
@@ -26,7 +26,7 @@ public class BlockadeRule extends Rule {
 		}
 		
 		if (count == 3) {
-			System.out.println("Attempt to jump over blockade");
+			if (checkRun) System.out.println("Attempt to jump over blockade");
 			callback.call(false);
 			return;
 		}	

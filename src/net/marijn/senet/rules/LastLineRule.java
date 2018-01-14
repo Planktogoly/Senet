@@ -12,7 +12,7 @@ public class LastLineRule extends Rule {
 	}
 
 	@Override
-	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare) {
+	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare, boolean checkRun) {
 		if (newSquare == 30) {
 			Player player = board.getPlayers().get(playerIndex);			
 			String pion = player.getPion();

@@ -11,6 +11,6 @@ public abstract class Rule {
 		this.board = board;
 	}
 	
-	public abstract void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare);
+	public abstract void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare, boolean checkRun);
 	
 }

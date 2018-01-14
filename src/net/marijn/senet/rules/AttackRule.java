@@ -11,7 +11,7 @@ public class AttackRule extends Rule {
 	}
 
 	@Override
-	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare) {
+	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare, boolean checkRun) {
 		if ((newSquare > 30) || (newSquare < 1)) {
 			callback.call(true);
 			return;
@@ -28,7 +28,7 @@ public class AttackRule extends Rule {
 			if (newSquare != 30) rightOfNewPlace = board.getSquare(newSquare + 1);
 			
 			if ((leftOfNewPlace != null && leftOfNewPlace.getPion().equals(pion)) || (rightOfNewPlace !=null && rightOfNewPlace.getPion().equals(pion))) {
-				System.out.println("Attack on safe piece: " + newSquare);
+				if (checkRun) System.out.println("Attack on safe piece: " + newSquare);
 				callback.call(false);
 				return;
 			}

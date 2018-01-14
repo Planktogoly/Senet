@@ -11,11 +11,11 @@ public class NeedsToBeYourPionRule extends Rule {
 	}
 
 	@Override
-	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare) {
+	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare, boolean checkRun) {
 		Player player = board.getPlayers().get(playerIndex);
 		
 		if (!player.getPion().equals(board.getSquare(oldSquare).getPion())) {
-			System.out.println("You don't have a piece on square " + oldSquare + ". You are " + player.getPion() + "!");
+			if (checkRun) System.out.println("You don't have a piece on square " + oldSquare + ". You are " + player.getPion() + "!");
 			callback.call(false);
 			return;
 		}

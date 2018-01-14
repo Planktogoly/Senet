@@ -10,9 +10,9 @@ public class OutsideTheBoardRule extends Rule {
 	}
 
 	@Override
-	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare) {
+	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare, boolean checkRun) {
 		if (newSquare > 30) {
-			System.out.println("You can't move a pion outside of the board!");
+			if (checkRun) System.out.println("You can't move a pion outside of the board!");
 			callback.call(false);
 			return;
 		}
