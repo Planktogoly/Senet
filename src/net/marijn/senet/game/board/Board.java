@@ -102,7 +102,6 @@ public class Board {
 		for (int i = 0; i < 30; i++) {
 			Square square = squares.get(i);
 			
-			System.out.println(square.getPion() + i);
 			if (square.getPion().equals(pion)) {
 				for (int j = 0; j < 6; j++) {
 					if (j == 5) continue;
@@ -119,7 +118,6 @@ public class Board {
 							public void call(Boolean passed) {
 								if (!passed) {
 									passesRules = false;
-									System.out.println(rule.getClass().getName());
 								}
 							}
 						}, playerIndex, i + 1, (i + 1) + j, false);
