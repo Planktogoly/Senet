@@ -16,5 +16,9 @@ public class Square {
 		this.pion = pion;
 	}
 	
+	public boolean isEmpty() {
+		return ".".equals(pion);
+	}
+	
 	
 }

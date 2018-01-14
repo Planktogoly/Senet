@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import net.marijn.senet.game.board.Board;
-import net.marijn.senet.game.board.Square;
 import net.marijn.senet.game.dice.Dice;
 import net.marijn.senet.utils.Utils;
 
@@ -23,7 +22,7 @@ public class Senet {
 
 	public Senet() {
 		this.players = new ArrayList<>();
-		this.board = new Board();
+		this.board = new Board(this);
 
 		this.scanner = new Scanner(System.in);
 	}
@@ -32,7 +31,7 @@ public class Senet {
 		System.out.println("Welcome to Senet!");
 
 		while (testGame == false && testPosition == 0) {
-			System.out.println("Would you like to start a normal game (0) or a test position (1-3)? ->");
+			System.out.println("Would you like to start a normal game (0) or a test position (1-3)?");
 			setTestGame(scanner.next());
 			scanner.nextLine();
 		}
@@ -50,9 +49,9 @@ public class Senet {
 
 			System.out.println(players.get(playerIndex).getName() + " has thrown " + thrownSticks);
 
-			if (thrownSticks == 1)
+			if (thrownSticks == 1) {
 				rightPoints = true;
-			else {
+			} else {
 				playerIndex = playerIndex == 0 ? 1 : 0;
 
 				// Wait 1 second so it is not instant
@@ -67,20 +66,20 @@ public class Senet {
 		System.out.println(players.get(playerIndex).getName() + " starts the game!");
 
 		players.get(playerIndex).setPion("X");
+		board.set(playerIndex, 10, 11);
+		
 		playerIndex = playerIndex == 0 ? 1 : 0;
 
 		Player player = players.get(playerIndex);
 
 		player.setPion("O");
 
-		board.set(board.getSquare(10), board.getSquare(11));
-
 		System.out.println(player.getName() + " (" + player.getPion() + "), press <ENTER> to throw the dice");
 		scanner.nextLine();
 
 		int sticks = Dice.throwSticks();
 		System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + sticks);
-		board.set(board.getSquare(9), board.getSquare(9 + sticks));
+		board.set(playerIndex, 9, 9 + sticks);
 		playerIndex = playerIndex == 0 ? 1 : 0;
 		
 		boolean winner = false;
@@ -126,26 +125,18 @@ public class Senet {
 			int answer = Utils.isAnswerANumber(rawAnswer);
 			if (answer == -1) continue;
 			
-			if (answer <= 0 && answer < 31) {
+			if (answer <= 0 || answer > 30) {
 				System.out.println("The piece place needs to be higher than zero and lower than thirty!");
 				continue;
 			}
 			
-			Square square = board.getSquare(answer);
-			if (".".equals(square.getPion())) {
-				System.out.println("This place doesn't have pion!");
-				continue;
-			}
-			
-			if (!player.getPion().equals(square.getPion())) {
-				System.out.println("This isn't your pion. You are " + player.getPion() + "!");
-				continue;
-			}
-			
-			board.set(board.getSquare(answer), board.getSquare(answer + sticks));
-			rightAnswer = true;
+			if (board.set(playerIndex, answer, answer + sticks)) rightAnswer = true;
 		}
 		
-		playerIndex = playerIndex == 0 ? 1 : 0;
+		if (sticks == 2 || sticks == 3) playerIndex = playerIndex == 0 ? 1 : 0;
+	}
+	
+	public ArrayList<Player> getPlayers() {
+		return players;
 	}
 }
