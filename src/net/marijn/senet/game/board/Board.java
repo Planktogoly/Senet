@@ -6,6 +6,7 @@ import net.marijn.senet.game.Player;
 import net.marijn.senet.game.Senet;
 import net.marijn.senet.rules.AttackRule;
 import net.marijn.senet.rules.BlockadeRule;
+import net.marijn.senet.rules.CantBeAttackedRule;
 import net.marijn.senet.rules.NeedsToBeYourPionRule;
 import net.marijn.senet.rules.NeedsToHaveAPionRule;
 import net.marijn.senet.rules.OutsideTheBoardRule;
@@ -32,6 +33,7 @@ public class Board {
 		rules.add(new AttackRule(this));
 		rules.add(new BlockadeRule(this));
 		rules.add(new PitFallRule(this));
+		rules.add(new CantBeAttackedRule(this));
 
 		for (int i = 0; i < 30; i++) {
 			String pion = ".";
