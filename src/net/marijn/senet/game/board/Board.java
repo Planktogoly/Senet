@@ -1,9 +1,11 @@
 package net.marijn.senet.game.board;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import net.marijn.senet.game.Player;
 import net.marijn.senet.game.Senet;
+import net.marijn.senet.positions.TestPosition;
 import net.marijn.senet.rules.AttackRule;
 import net.marijn.senet.rules.BlockadeRule;
 import net.marijn.senet.rules.CantBeAttackedRule;
@@ -21,11 +23,14 @@ public class Board {
 	private ArrayList<Square> squares;
 	private ArrayList<Rule> rules;
 
+	private HashMap<Integer, TestPosition> testPositions;
+	
 	public Board(Senet senet) {
 		this.senet = senet;
 		
 		this.squares = new ArrayList<>();
 		this.rules = new ArrayList<>();
+		this.testPositions = new HashMap<>();
 		
 		rules.add(new NeedsToHaveAPionRule(this));
 		rules.add(new NeedsToBeYourPionRule(this));
@@ -34,17 +39,9 @@ public class Board {
 		rules.add(new BlockadeRule(this));
 		rules.add(new PitFallRule(this));
 		rules.add(new CantBeAttackedRule(this));
-
-		for (int i = 0; i < 30; i++) {
-			String pion = ".";
-
-			if (i < 10 && i % 2 == 0)
-				pion = "O";
-			else if (i < 10 && !(i % 2 == 0))
-				pion = "X";
-
-			squares.add(new Square(pion));
-		}
+		
+		initializeTestPositions();
+		createBoard();
 	}	
 	
 	public ArrayList<Player> getPlayers() {
@@ -82,6 +79,10 @@ public class Board {
 		
 		newSquare.setPion(oldPion);
 		oldSquare.setPion(newPion);
+		
+		if (newPlace == 30) {
+			newSquare.setPion(".");
+		}
 		
 		print();
 		return true;
@@ -121,5 +122,74 @@ public class Board {
 		System.out.println("");
 		System.out.println("+---------------------+");
 	}
+	
+	public void createBoard() {
+		squares.clear();
+		
+		int testPositionInt = senet.getTestPosition();
+		
+		TestPosition testPosition = null;
+		
+		if (testPositionInt >= 1) testPosition = testPositions.get(senet.getTestPosition());
+		
+		for (int i = 0; i < 30; i++) {
+			String pion = ".";
 
+			if (testPosition != null) {
+				String testPion = testPosition.getPionOnPlace(i);
+				
+				if (testPion != null) pion = testPion;
+			} else {
+				if (i < 10 && i % 2 == 0)
+					pion = "O";
+				else if (i < 10 && !(i % 2 == 0))
+					pion = "X";
+			}
+			squares.add(new Square(pion));
+		}
+	}
+
+	private void initializeTestPositions() {
+		TestPosition testPosition1 = new TestPosition();
+		testPosition1.addPosition(0, "X");
+		testPosition1.addPosition(1, "O");
+		testPosition1.addPosition(3, "O");
+		testPosition1.addPosition(4, "O");
+		testPosition1.addPosition(5, "X");
+		testPosition1.addPosition(9, "O");
+		testPosition1.addPosition(11, "O");
+		testPosition1.addPosition(13, "O");
+		testPosition1.addPosition(15, "X");
+		testPosition1.addPosition(16, "O");
+		testPosition1.addPosition(17, "O");
+		testPosition1.addPosition(19, "O");
+		testPosition1.addPosition(20, "O");
+		testPosition1.addPosition(22, "X");
+		testPosition1.addPosition(23, "O");
+		testPosition1.addPosition(24, "O");
+		testPosition1.addPosition(25, "O");
+		
+		testPositions.put(1, testPosition1);
+		
+		TestPosition testPosition2 = new TestPosition();
+		testPosition2.addPosition(21, "O");
+		testPosition2.addPosition(22, "O");
+		testPosition2.addPosition(23, "O");
+		testPosition2.addPosition(28, "X");
+		
+		testPositions.put(2, testPosition2);
+		
+		TestPosition testPosition3 = new TestPosition();
+		testPosition3.addPosition(5, "O");
+		testPosition3.addPosition(12, "X");
+		testPosition3.addPosition(17, "O");
+		testPosition3.addPosition(21, "O");
+		testPosition3.addPosition(24, "X");
+		testPosition3.addPosition(25, "X");
+		testPosition3.addPosition(27, "X");
+		testPosition3.addPosition(28, "X");
+		
+		testPositions.put(3, testPosition3);
+	}
+	
 }

@@ -12,14 +12,22 @@ public class AttackRule extends Rule {
 
 	@Override
 	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare) {
+		if ((newSquare > 30) || (newSquare < 1)) {
+			callback.call(true);
+			return;
+		}
+		
 		Square newPlace = board.getSquare(newSquare);
 		
 		String pion = newPlace.getPion();
 		if (!pion.equals(".") && !pion.equals(board.getPlayers().get(playerIndex).getPion())) {
-			Square leftOfNewPlace = board.getSquare(newSquare - 1);
-			Square rightOfNewPlace = board.getSquare(newSquare + 1);
+			Square leftOfNewPlace = null;
+			Square rightOfNewPlace = null;
 			
-			if (leftOfNewPlace.getPion().equals(pion) || rightOfNewPlace.getPion().equals(pion)) {
+			if (newSquare != 1) leftOfNewPlace = board.getSquare(newSquare - 1);
+			if (newSquare != 30) rightOfNewPlace = board.getSquare(newSquare + 1);
+			
+			if ((leftOfNewPlace != null && leftOfNewPlace.getPion().equals(pion)) || (rightOfNewPlace !=null && rightOfNewPlace.getPion().equals(pion))) {
 				System.out.println("Attack on safe piece: " + newSquare);
 				callback.call(false);
 				return;

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import net.marijn.senet.game.board.Board;
+import net.marijn.senet.game.board.Square;
 import net.marijn.senet.game.dice.Dice;
 import net.marijn.senet.utils.Utils;
 
@@ -19,12 +20,17 @@ public class Senet {
 	private Scanner scanner;
 	
 	private int playerIndex = 0;
+	private Player winner = null;
 
 	public Senet() {
 		this.players = new ArrayList<>();
 		this.board = new Board(this);
 
 		this.scanner = new Scanner(System.in);
+	}
+	
+	public int getTestPosition() {
+		return testPosition;
 	}
 
 	public void play() {
@@ -66,26 +72,33 @@ public class Senet {
 		System.out.println(players.get(playerIndex).getName() + " starts the game!");
 
 		players.get(playerIndex).setPion("X");
-		board.set(playerIndex, 10, 11);
 		
-		playerIndex = playerIndex == 0 ? 1 : 0;
+		if (testPosition == -1) {
+			board.set(playerIndex, 10, 11);
+			
+			playerIndex = playerIndex == 0 ? 1 : 0;
 
-		Player player = players.get(playerIndex);
+			Player player = players.get(playerIndex);
 
-		player.setPion("O");
+			player.setPion("O");
 
-		System.out.println(player.getName() + " (" + player.getPion() + "), press <ENTER> to throw the dice");
-		scanner.nextLine();
+			System.out.println(player.getName() + " (" + player.getPion() + "), press <ENTER> to throw the dice");
+			scanner.nextLine();
 
-		int sticks = Dice.throwSticks();
-		System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + sticks);
-		board.set(playerIndex, 9, 9 + sticks);
-		playerIndex = playerIndex == 0 ? 1 : 0;
-		
-		boolean winner = false;
-		while (!winner) {
+			int sticks = Dice.throwSticks();
+			System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + sticks);
+			board.set(playerIndex, 9, 9 + sticks);
+			playerIndex = playerIndex == 0 ? 1 : 0;
+		} else {
+			board.createBoard();
+			board.print();
+		}
+
+		while (winner == null) {
 			playerTurn();
 		}		
+		
+		System.out.println(winner.getName() + " has won the game!");
 	}
 
 	private void addPlayer(String name) {
@@ -131,9 +144,27 @@ public class Senet {
 			}
 			
 			if (board.set(playerIndex, answer, answer + sticks)) rightAnswer = true;
+			
+			checkIfSomeoneWon();
 		}
 		
 		if (sticks == 2 || sticks == 3) playerIndex = playerIndex == 0 ? 1 : 0;
+	}
+	
+	public void checkIfSomeoneWon() {
+		int whitesLeft = 0;
+		int blacksLeft = 0;
+		
+		for (int i = 0; i < 30; i++ ) {
+			Square square = board.getSquare(i + 1);
+			
+			if (square.getPion().equals("O")) whitesLeft++;
+			else if (square.getPion().equals("X")) blacksLeft++;
+		}
+		
+		if (whitesLeft == 0 || blacksLeft == 0) {
+			winner = players.get(playerIndex);
+		}
 	}
 	
 	public ArrayList<Player> getPlayers() {

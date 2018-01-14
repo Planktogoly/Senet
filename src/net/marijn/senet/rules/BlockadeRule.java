@@ -16,6 +16,8 @@ public class BlockadeRule extends Rule {
 		
 		int count = 0;
 		for (int i = oldSquare + 1; i < ((oldSquare + 1) + 3); i++) {
+			if (i > 30) continue;
+			
 			Square placeOnBoard = board.getSquare(i);
 			
 			if (placeOnBoard.getPion().equals(enemyPion)) {
