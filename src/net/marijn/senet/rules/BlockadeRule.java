@@ -26,7 +26,7 @@ public class BlockadeRule extends Rule {
 			
 			Square placeOnBoard = board.getSquare(i);
 
-			if (count > 0 && placeOnBoard.getPawn().equals(".")) break;
+			if (count > 0 && (placeOnBoard.getPawn().equals(".") || placeOnBoard.getPawn().equals(board.getPlayers().get(playerIndex).getPawn()))) break;
 			
 			if (placeOnBoard.getPawn().equals(enemypawn)) {
 				count++;
