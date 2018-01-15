@@ -130,8 +130,7 @@ public class Senet {
 			
 			addPlayer("Computer");
 		}
-	}
-	
+	}	
 	
 	/**
 	 * Start of a game Senet

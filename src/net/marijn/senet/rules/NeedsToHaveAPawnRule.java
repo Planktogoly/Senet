@@ -3,14 +3,14 @@ package net.marijn.senet.rules;
 import net.marijn.senet.game.board.Board;
 import net.marijn.senet.utils.Callback;
 
-public class NeedsToHaveApawnRule extends Rule {
+public class NeedsToHaveAPawnRule extends Rule {
 
 	/**
 	 * You need to select a place with a pawn on it
 	 * 
 	 * @param board
 	 */
-	public NeedsToHaveApawnRule(Board board) {
+	public NeedsToHaveAPawnRule(Board board) {
 		super(board);
 	}
 

@@ -10,9 +10,9 @@ import net.marijn.senet.game.player.Player;
 import net.marijn.senet.rules.AttackRule;
 import net.marijn.senet.rules.BlockadeRule;
 import net.marijn.senet.rules.CantBeAttackedRule;
-import net.marijn.senet.rules.CantBeYourpawnRule;
-import net.marijn.senet.rules.NeedsToBeYourpawnRule;
-import net.marijn.senet.rules.NeedsToHaveApawnRule;
+import net.marijn.senet.rules.CantBeYourPawnRule;
+import net.marijn.senet.rules.NeedsToBeYourPawnRule;
+import net.marijn.senet.rules.NeedsToHaveAPawnRule;
 import net.marijn.senet.rules.OutsideTheBoardRule;
 import net.marijn.senet.rules.PitFallRule;
 import net.marijn.senet.rules.Rule;
@@ -36,14 +36,14 @@ public class Board {
 		this.rules = new ArrayList<>();
 		this.testPositions = new HashMap<>();
 		
-		rules.add(new NeedsToHaveApawnRule(this));
-		rules.add(new NeedsToBeYourpawnRule(this));
+		rules.add(new NeedsToHaveAPawnRule(this));
+		rules.add(new NeedsToBeYourPawnRule(this));
 		rules.add(new OutsideTheBoardRule(this));
 		rules.add(new AttackRule(this));
 		rules.add(new BlockadeRule(this));
 		rules.add(new PitFallRule(this));
 		rules.add(new CantBeAttackedRule(this));
-		rules.add(new CantBeYourpawnRule(this));
+		rules.add(new CantBeYourPawnRule(this));
 		
 		initializeTestPositions();
 		createBoard();
