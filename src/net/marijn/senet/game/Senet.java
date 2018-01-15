@@ -167,9 +167,7 @@ public class Senet {
 
 			String pawn = "O";
 			
-			player.setPawn(pawn);
-			
-			
+			player.setPawn(pawn);		
 			
 			if (player.getName().equalsIgnoreCase("Computer")) {
 				int thrownPoints = Dice.throwSticks();
@@ -251,7 +249,10 @@ public class Senet {
 					String rawAnswer = scanner.nextLine();
 					
 					int answer = Utils.isAnswerANumber(rawAnswer);
-					if (answer == -1) continue;
+					if (answer == -1) {
+						System.out.println("This is not a correct number! Try again...");
+						continue;
+					}
 					
 					if (answer <= 0 || answer > 30) {
 						System.out.println("The piece place needs to be higher than zero and lower than thirty!");
@@ -268,7 +269,10 @@ public class Senet {
 				String rawAnswer = scanner.nextLine();
 				
 				int answer = Utils.isAnswerANumber(rawAnswer);
-				if (answer == -1) continue;
+				if (answer == -1) {
+					System.out.println("This is not a correct number! Try again...");
+					continue;
+				}
 				
 				if (answer <= 0 || answer > 30) {
 					System.out.println("The piece place needs to be higher than zero and lower than thirty!");
