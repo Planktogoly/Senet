@@ -9,7 +9,7 @@ import net.marijn.senet.game.dice.Dice;
 import net.marijn.senet.utils.Utils;
 
 public class Senet {
-
+	
 	private ArrayList<Player> players;
 
 	private Board board;
@@ -42,22 +42,27 @@ public class Senet {
 			scanner.nextLine();
 		}
 
-		System.out.println("Enter the name of the first player:");
-		addPlayer(scanner.nextLine());
-		System.out.println("Enter the name of the second player:");
+		boolean correctName = false;
+		while (!correctName) {
+			System.out.println("Enter the name of the first player:");
+			String input = scanner.nextLine();
+			
+			if (input.isEmpty()) continue;
+			
+			addPlayer(input);
+			correctName = true;
+		}
 		
-		boolean notTheSameName = false;
-		while (!notTheSameName) {
-			String name = scanner.nextLine();
-			
-			if (!name.equals(players.get(0).getName())) {
-				notTheSameName = true;
-				addPlayer(name);
-				continue;
-			}
-			
-			System.out.println("You cannot have the same name!");
+		correctName = false;
+		while (!correctName) {
 			System.out.println("Enter the name of the second player:");
+			String input = scanner.nextLine();
+			
+			if (input.isEmpty()) continue;			
+			if (input.equals(players.get(0).getName())) continue;
+			
+			addPlayer(input);
+			correctName = true;			
 		}
 
 		boolean rightPoints = false;
@@ -110,7 +115,7 @@ public class Senet {
 		}
 
 		while (winner == null) {
-			playerTurn();
+			playTurn();
 		}		
 		
 		System.out.println(winner.getName() + " has won the game!");
@@ -136,17 +141,23 @@ public class Senet {
 		}
 	}
 	
-	private void playerTurn() {
+	private void playTurn() {
 		Player player = players.get(playerIndex);
 		
 		System.out.println(player.getName() + " (" + player.getPion() + "), press <ENTER> to throw the dice");
 		scanner.nextLine();
 
-		int sticks = Dice.throwSticks();
-		System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + sticks);
+		int pointsThrown = Dice.throwSticks();
+		System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + pointsThrown);
 		
-		if (!board.checkifPlayerCanSetAPion(playerIndex)) {
-			System.out.println("You can't set a pion!");
+		if (!board.checkifPlayerCanSetAPion(playerIndex, pointsThrown)) {
+			System.out.println("You can't set a pion! Checking for a backwards turn...");
+			
+			if (!board.checkifPlayerCanSetAPion(playerIndex, -pointsThrown)) {
+				System.out.println("You can't set a pion!");
+			} else {
+				System.out.println("You can set a backwards turn!");
+			}			
 		} else {
 			boolean rightAnswer = false;
 			while (!rightAnswer) {
@@ -161,13 +172,13 @@ public class Senet {
 					continue;
 				}
 				
-				if (board.set(playerIndex, answer, answer + sticks, sticks)) rightAnswer = true;
+				if (board.set(playerIndex, answer, answer + pointsThrown, pointsThrown)) rightAnswer = true;
 				
 				checkIfSomeoneWon();
 			}
 		}
 		
-		if (sticks == 2 || sticks == 3) playerIndex = playerIndex == 0 ? 1 : 0;
+		if (pointsThrown == 2 || pointsThrown == 3) playerIndex = playerIndex == 0 ? 1 : 0;
 	}
 	
 	public void checkIfSomeoneWon() {

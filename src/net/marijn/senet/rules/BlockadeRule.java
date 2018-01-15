@@ -15,10 +15,13 @@ public class BlockadeRule extends Rule {
 		String enemyPion = board.getPlayers().get(playerIndex == 0 ? 1 : 0).getPion();
 		
 		int count = 0;
-		for (int i = oldSquare + 1; i < ((oldSquare + 1) + 3); i++) {
+		for (int i = oldSquare + 1; i < newSquare; i++) {
 			if (i > 30) continue;
+			if (count == 3) break;
 			
 			Square placeOnBoard = board.getSquare(i);
+
+			if (count > 0 && placeOnBoard.getPion().equals(".")) break;
 			
 			if (placeOnBoard.getPion().equals(enemyPion)) {
 				count++;

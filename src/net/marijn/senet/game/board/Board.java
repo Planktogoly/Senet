@@ -5,10 +5,11 @@ import java.util.HashMap;
 
 import net.marijn.senet.game.Player;
 import net.marijn.senet.game.Senet;
-import net.marijn.senet.positions.TestPosition;
+import net.marijn.senet.game.board.positions.TestPosition;
 import net.marijn.senet.rules.AttackRule;
 import net.marijn.senet.rules.BlockadeRule;
 import net.marijn.senet.rules.CantBeAttackedRule;
+import net.marijn.senet.rules.CantBeYourPionRule;
 import net.marijn.senet.rules.NeedsToBeYourPionRule;
 import net.marijn.senet.rules.NeedsToHaveAPionRule;
 import net.marijn.senet.rules.OutsideTheBoardRule;
@@ -39,6 +40,7 @@ public class Board {
 		rules.add(new BlockadeRule(this));
 		rules.add(new PitFallRule(this));
 		rules.add(new CantBeAttackedRule(this));
+		rules.add(new CantBeYourPionRule(this));
 		
 		initializeTestPositions();
 		createBoard();
@@ -96,43 +98,39 @@ public class Board {
 		return true;
 	}
 	
-	public boolean checkifPlayerCanSetAPion(int playerIndex) {
+	public boolean checkifPlayerCanSetAPion(int playerIndex, int pointsThrown) {
 		String pion = getPlayers().get(playerIndex).getPion();
 		
+		passesRules = true;	
+		
 		for (int i = 0; i < 30; i++) {
+			if ((i + 1) + pointsThrown > 30 || (i + 1) + pointsThrown < 1) continue;
+			
 			Square square = squares.get(i);
 			
 			if (square.getPion().equals(pion)) {
-				for (int j = 0; j < 6; j++) {
-					if (j == 5) continue;
+				passesRules = true;
+				
+				for (Rule rule : rules) {	
+					if (rule.getClass().getName().equalsIgnoreCase("net.marijn.senet.rules.PitFallRule")) continue;
+					if (!passesRules) break;
 					
-					passesRules = true;	
-					
-					for (Rule rule : rules) {		
-						if (!passesRules) continue;
-						if (rule.getClass().getName().equalsIgnoreCase("net.marijn.senet.rules.PitFallRule")) continue;
+					rule.run(new Callback<Boolean>() {
 						
-						rule.run(new Callback<Boolean>() {
-							
-							@Override
-							public void call(Boolean passed) {
-								if (!passed) {
-									passesRules = false;
-								}
-							}
-						}, playerIndex, i + 1, (i + 1) + j, false);
-					}
-					
-					if (!passesRules) {
-						break;
-					}
+						@Override
+						public void call(Boolean passed) {
+							passesRules = passed;
+						}
+					}, playerIndex, i + 1, (i + 1) + pointsThrown, false);
 				}
 				
-				if (passesRules) return true;
+				if (passesRules) {
+					break;
+				} 				
 			}
 		}
 		
-		return false;
+		return passesRules;
 	}
 
 	public void print() {

@@ -1,4 +1,4 @@
-package net.marijn.senet.positions;
+package net.marijn.senet.game.board.positions;
 
 import java.util.HashMap;
 
