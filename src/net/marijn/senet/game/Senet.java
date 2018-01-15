@@ -62,7 +62,7 @@ public class Senet {
 		if (differenceInTurns < 0) {
 			System.out.println("That is " + (differenceInTurns * -1) + " less than his enemy!");
 		} else {
-			System.out.println("That is " + differenceInTurns + " more than his enemy!");
+			System.out.println("That is " + differenceInTurns + " more than his opponent!");
 		}
 		
 		System.out.println(" ");
