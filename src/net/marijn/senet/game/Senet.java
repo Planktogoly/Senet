@@ -221,10 +221,10 @@ public class Senet {
 				
 				System.out.println(player.getName() + " (" + pawn + "), which piece do you want to move? " + answer);
 				
-				board.set(playerIndex, answer, answer + pointsThrown);
+				// Wait 3 seconds. We dont want it to be instant!
+				Utils.sleep(3000L);
 				
-				// Wait 2 seconds. We dont want it to be instant!
-				Utils.sleep(2000L);
+				board.set(playerIndex, answer, answer + pointsThrown);
 			}
 			
 			if (pointsThrown == 2 || pointsThrown == 3) playerIndex = playerIndex == 0 ? 1 : 0;			
