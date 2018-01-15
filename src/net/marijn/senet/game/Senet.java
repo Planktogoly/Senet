@@ -14,6 +14,8 @@ public class Senet {
 
 	private Board board;
 
+	private int gameMode = 0;
+	
 	private boolean testGame;
 	private int testPosition;
 
@@ -36,33 +38,55 @@ public class Senet {
 	public void play() {
 		System.out.println("Welcome to Senet!");
 
-		while (testGame == false && testPosition == 0) {
+		while (!testGame && testPosition == 0) {
 			System.out.println("Would you like to start a normal game (0) or a test position (1-3)?");
 			setTestGame(scanner.next());
 			scanner.nextLine();
 		}
-
-		boolean correctName = false;
-		while (!correctName) {
-			System.out.println("Enter the name of the first player:");
-			String input = scanner.nextLine();
+		
+		while (gameMode != 1 && gameMode != 2) {
+			System.out.println("Do you want to play singleplayer(1) or multiplayer(2)?");
+			int answer = Utils.isAnswerANumber(scanner.nextLine());
 			
-			if (input.isEmpty()) continue;
-			
-			addPlayer(input);
-			correctName = true;
+			gameMode = answer;
 		}
 		
-		correctName = false;
-		while (!correctName) {
-			System.out.println("Enter the name of the second player:");
-			String input = scanner.nextLine();
+		if (gameMode == 2) {
+			boolean correctName = false;
+			while (!correctName) {
+				System.out.println("Enter the name of the first player:");
+				String input = scanner.nextLine();
+				
+				if (input.isEmpty()) continue;
+				
+				addPlayer(input);
+				correctName = true;
+			}
 			
-			if (input.isEmpty()) continue;			
-			if (input.equals(players.get(0).getName())) continue;
+			correctName = false;
+			while (!correctName) {
+				System.out.println("Enter the name of the second player:");
+				String input = scanner.nextLine();
+				
+				if (input.isEmpty()) continue;			
+				if (input.equals(players.get(0).getName())) continue;
+				
+				addPlayer(input);
+				correctName = true;			
+			}
+		} else {
+			boolean correctName = false;
+			while (!correctName) {
+				System.out.println("Enter your player name:");
+				String input = scanner.nextLine();
+				
+				if (input.isEmpty()) continue;
+				
+				addPlayer(input);
+				correctName = true;
+			}
 			
-			addPlayer(input);
-			correctName = true;			
+			addPlayer("Computer");
 		}
 
 		boolean rightPoints = false;
@@ -97,14 +121,21 @@ public class Senet {
 			Player player = players.get(playerIndex);
 
 			player.setPion("O");
+			
+			if (player.getName().equalsIgnoreCase("Computer")) {
+				int thrownPoints = Dice.throwSticks();
+				System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + thrownPoints);
+				board.set(playerIndex, 9, 9 + thrownPoints, thrownPoints);
+				playerIndex = playerIndex == 0 ? 1 : 0;				
+			} else {
+				System.out.println(player.getName() + " (" + player.getPion() + "), press <ENTER> to throw the dice");
+				scanner.nextLine();
 
-			System.out.println(player.getName() + " (" + player.getPion() + "), press <ENTER> to throw the dice");
-			scanner.nextLine();
-
-			int sticks = Dice.throwSticks();
-			System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + sticks);
-			board.set(playerIndex, 9, 9 + sticks, sticks);
-			playerIndex = playerIndex == 0 ? 1 : 0;
+				int thrownPoints = Dice.throwSticks();
+				System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + thrownPoints);
+				board.set(playerIndex, 9, 9 + thrownPoints, thrownPoints);
+				playerIndex = playerIndex == 0 ? 1 : 0;
+			}
 		} else {
 			playerIndex = playerIndex == 0 ? 1 : 0;
 			Player player = players.get(playerIndex);
@@ -144,6 +175,39 @@ public class Senet {
 	private void playTurn() {
 		Player player = players.get(playerIndex);
 		
+		if (player.getName().equals("Computer")) {
+			int pointsThrown = Dice.throwSticks();
+			System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + pointsThrown);
+			
+			if (!board.checkifPlayerCanSetAPion(playerIndex, pointsThrown)) {
+				System.out.println("The computer can't set a pion! Checking for a backwards turn...");
+				
+				if (!board.checkifPlayerCanSetAPion(playerIndex, -pointsThrown)) {
+					System.out.println("The computer can't set a pion!");
+				} else {
+					int answer = board.getBestSet(playerIndex, -pointsThrown);
+					
+					board.set(playerIndex, answer, answer - pointsThrown, -pointsThrown);
+				}			
+			} else {
+				int answer = board.getBestSet(playerIndex, pointsThrown);
+				
+				System.out.println(player.getName() + " (" + player.getPion() + "), which piece do you want to move? " + answer);
+				
+				board.set(playerIndex, answer, answer + pointsThrown, pointsThrown);
+				
+				try {
+					Thread.sleep(2000L);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			checkIfSomeoneWon();
+			if (pointsThrown == 2 || pointsThrown == 3) playerIndex = playerIndex == 0 ? 1 : 0;			
+			return;
+		}		
+		
 		System.out.println(player.getName() + " (" + player.getPion() + "), press <ENTER> to throw the dice");
 		scanner.nextLine();
 
@@ -156,7 +220,21 @@ public class Senet {
 			if (!board.checkifPlayerCanSetAPion(playerIndex, -pointsThrown)) {
 				System.out.println("You can't set a pion!");
 			} else {
-				System.out.println("You can set a backwards turn!");
+				boolean rightAnswer = false;
+				while (!rightAnswer) {
+					System.out.println(player.getName() + " (" + player.getPion() + "), which piece do you want to move?");
+					String rawAnswer = scanner.nextLine();
+					
+					int answer = Utils.isAnswerANumber(rawAnswer);
+					if (answer == -1) continue;
+					
+					if (answer <= 0 || answer > 30) {
+						System.out.println("The piece place needs to be higher than zero and lower than thirty!");
+						continue;
+					}
+					
+					if (board.set(playerIndex, answer, answer - pointsThrown, -pointsThrown)) rightAnswer = true;
+				}
 			}			
 		} else {
 			boolean rightAnswer = false;
@@ -173,11 +251,10 @@ public class Senet {
 				}
 				
 				if (board.set(playerIndex, answer, answer + pointsThrown, pointsThrown)) rightAnswer = true;
-				
-				checkIfSomeoneWon();
 			}
 		}
 		
+		checkIfSomeoneWon();
 		if (pointsThrown == 2 || pointsThrown == 3) playerIndex = playerIndex == 0 ? 1 : 0;
 	}
 	

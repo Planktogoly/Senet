@@ -2,6 +2,7 @@ package net.marijn.senet.game.board;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import net.marijn.senet.game.Player;
 import net.marijn.senet.game.Senet;
@@ -96,6 +97,51 @@ public class Board {
 			print();
 		}
 		return true;
+	}
+	
+	public int getBestSet(int playerIndex, int pointsThrown) {
+		String pion = getPlayers().get(playerIndex).getPion();
+		
+		HashMap<Integer, Integer> answers = new HashMap<>();
+		
+		for (int i = 0; i < 30; i++) {
+			if ((i + 1) + pointsThrown > 30 || (i + 1) + pointsThrown < 1) continue;
+			
+			Square square = squares.get(i);
+			
+			if (square.getPion().equals(pion)) {
+				passesRules = true;
+				
+				for (Rule rule : rules) {	
+					if (rule.getClass().getName().equalsIgnoreCase("net.marijn.senet.rules.PitFallRule")) continue;
+					if (!passesRules) break;
+					
+					rule.run(new Callback<Boolean>() {
+						
+						@Override
+						public void call(Boolean passed) {
+							passesRules = passed;
+						}
+					}, playerIndex, i + 1, (i + 1) + pointsThrown, false);
+				}
+				
+				if (passesRules) {
+					answers.put(i + 1, i + 1 + pointsThrown);
+				} 				
+			}
+		}
+		
+		int bestAnswer = 0;
+		int farestSet = 0;
+		
+		for (Entry<Integer, Integer> entry : answers.entrySet()) {
+			if (entry.getValue() > farestSet) {
+				bestAnswer = entry.getKey();
+				farestSet = entry.getValue();
+			}
+		}		
+		
+		return bestAnswer;
 	}
 	
 	public boolean checkifPlayerCanSetAPion(int playerIndex, int pointsThrown) {
@@ -236,6 +282,5 @@ public class Board {
 		testPosition3.addPosition(28, "X");
 		
 		testPositions.put(3, testPosition3);
-	}
-	
+	}	
 }
