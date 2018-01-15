@@ -1,7 +1,7 @@
 package net.marijn.senet.rules;
 
-import net.marijn.senet.game.Player;
 import net.marijn.senet.game.board.Board;
+import net.marijn.senet.game.player.Player;
 import net.marijn.senet.utils.Callback;
 
 public class CantBeYourPionRule extends Rule {

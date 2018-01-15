@@ -6,6 +6,7 @@ import java.util.Scanner;
 import net.marijn.senet.game.board.Board;
 import net.marijn.senet.game.board.Square;
 import net.marijn.senet.game.dice.Dice;
+import net.marijn.senet.game.player.Player;
 import net.marijn.senet.utils.Utils;
 
 public class Senet {
@@ -14,44 +15,57 @@ public class Senet {
 
 	private Board board;
 
-	private int gameMode = 0;
+	private GameMode gameMode;
 	
 	private boolean testGame;
 	private int testPosition;
 
 	private Scanner scanner;
 	
-	private int playerIndex = 0;
-	private Player winner = null;
+	private int playerIndex;
+	private Player winner;
 
 	public Senet() {
 		this.players = new ArrayList<>();
 		this.board = new Board(this);
 
 		this.scanner = new Scanner(System.in);
-	}
-	
-	public int getTestPosition() {
-		return testPosition;
+		
+		this.playerIndex = 0;
 	}
 
 	public void play() {
 		System.out.println("Welcome to Senet!");
+		System.out.println("<------------------------->");
+		
+		setupSenet();
+		
+		startGame();
 
+		while (winner == null) {
+			playTurn();
+		}		
+		
+		System.out.println("<------------------------->");
+		System.out.println(winner.getName() + " has won the game!");
+	}
+	
+	private void setupSenet() {
 		while (!testGame && testPosition == 0) {
-			System.out.println("Would you like to start a normal game (0) or a test position (1-3)?");
+			System.out.println("Would you like to start a normal game (0) or start on a test position (1-3)?");
 			setTestGame(scanner.next());
 			scanner.nextLine();
 		}
 		
-		while (gameMode != 1 && gameMode != 2) {
+		while (gameMode == null) {
 			System.out.println("Do you want to play singleplayer(1) or multiplayer(2)?");
 			int answer = Utils.isAnswerANumber(scanner.nextLine());
 			
-			gameMode = answer;
+			if (answer == 1) gameMode = GameMode.SINGEPLAYER;
+			else if (answer == 2) gameMode = GameMode.MULTIPLAYER; 
 		}
 		
-		if (gameMode == 2) {
+		if (gameMode == GameMode.MULTIPLAYER) {
 			boolean correctName = false;
 			while (!correctName) {
 				System.out.println("Enter the name of the first player:");
@@ -88,7 +102,9 @@ public class Senet {
 			
 			addPlayer("Computer");
 		}
-
+	}
+	
+	private void startGame() {
 		boolean rightPoints = false;
 		while (!rightPoints) {
 			int thrownSticks = Dice.throwSticks();
@@ -143,32 +159,6 @@ public class Senet {
 			
 			board.createBoard();
 			board.print();
-		}
-
-		while (winner == null) {
-			playTurn();
-		}		
-		
-		System.out.println(winner.getName() + " has won the game!");
-	}
-
-	private void addPlayer(String name) {
-		Player player = new Player(name);
-
-		players.add(player);
-	}
-
-	private void setTestGame(String rawAnswer) {
-		int answer = Utils.isAnswerANumber(rawAnswer);
-
-		if (answer == 0) {
-			testGame = false;
-			testPosition = -1;
-		} else if (answer >= 0 && answer <= 3) {
-			testGame = true;
-			testPosition = answer;
-		} else if (answer < 0) {
-			return;
 		}
 	}
 	
@@ -273,8 +263,32 @@ public class Senet {
 			winner = players.get(playerIndex);
 		}
 	}
+
+	private void setTestGame(String rawAnswer) {
+		int answer = Utils.isAnswerANumber(rawAnswer);
+
+		if (answer == 0) {
+			testGame = false;
+			testPosition = -1;
+		} else if (answer >= 0 && answer <= 3) {
+			testGame = true;
+			testPosition = answer;
+		} else if (answer < 0) {
+			return;
+		}
+	}
+	
+	private void addPlayer(String name) {
+		Player player = new Player(name);
+
+		players.add(player);
+	}
 	
 	public ArrayList<Player> getPlayers() {
 		return players;
+	}
+	
+	public int getTestPosition() {
+		return testPosition;
 	}
 }

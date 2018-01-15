@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import net.marijn.senet.game.Player;
 import net.marijn.senet.game.Senet;
 import net.marijn.senet.game.board.positions.TestPosition;
+import net.marijn.senet.game.player.Player;
 import net.marijn.senet.rules.AttackRule;
 import net.marijn.senet.rules.BlockadeRule;
 import net.marijn.senet.rules.CantBeAttackedRule;

@@ -1,4 +1,4 @@
-package net.marijn.senet.game;
+package net.marijn.senet.game.player;
 
 public class Player {
 	
