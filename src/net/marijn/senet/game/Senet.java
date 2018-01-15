@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import net.marijn.senet.game.board.Board;
-import net.marijn.senet.game.board.Square;
 import net.marijn.senet.game.dice.Dice;
 import net.marijn.senet.game.player.Player;
 import net.marijn.senet.utils.Utils;
@@ -205,7 +204,6 @@ public class Senet {
 				Utils.sleep(2000L);
 			}
 			
-			checkIfSomeoneWon();
 			if (pointsThrown == 2 || pointsThrown == 3) playerIndex = playerIndex == 0 ? 1 : 0;			
 			return;
 		}		
@@ -256,24 +254,7 @@ public class Senet {
 			}
 		}
 		
-		checkIfSomeoneWon();
 		if (pointsThrown == 2 || pointsThrown == 3) playerIndex = playerIndex == 0 ? 1 : 0;
-	}
-	
-	public void checkIfSomeoneWon() {
-		int whitesLeft = 0;
-		int blacksLeft = 0;
-		
-		for (int i = 0; i < 30; i++ ) {
-			Square square = board.getSquare(i + 1);
-			
-			if (square.getPion().equals("O")) whitesLeft++;
-			else if (square.getPion().equals("X")) blacksLeft++;
-		}
-		
-		if (whitesLeft == 0 || blacksLeft == 0) {
-			winner = players.get(playerIndex);
-		}
 	}
 
 	private void setTestGame(String rawAnswer) {
@@ -298,6 +279,10 @@ public class Senet {
 	
 	public ArrayList<Player> getPlayers() {
 		return players;
+	}
+	
+	public void setWinner(Player player) {
+		this.winner = player;
 	}
 	
 	public int getTestPosition() {

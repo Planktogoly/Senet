@@ -47,36 +47,10 @@ public class Board {
 		createBoard();
 	}	
 	
-	public ArrayList<Player> getPlayers() {
-		return senet.getPlayers();
-	}
-	
-	public Square getSquare(int index) {
-		int rightIndex = index - 1;
-		
-		return squares.get(rightIndex);
-	}
-	
 	private boolean passesRules = true;
 	
-	public boolean set(int playerIndex, int oldPlace, int newPlace, int sticks) {
-		passesRules = true;	
-		
-		for (Rule rule : rules) {		
-			if (!passesRules) continue;
-			
-			rule.run(new Callback<Boolean>() {
-				
-				@Override
-				public void call(Boolean passed) {
-					if (!passed) {
-						passesRules = false;
-					}
-				}
-			}, playerIndex, oldPlace, newPlace, true);
-		}
-		
-		if (!passesRules) {
+	public boolean set(int playerIndex, int oldPlace, int newPlace, int sticks) {		
+		if (!checkIfSetIsCorrect(playerIndex, oldPlace, newPlace, true)) {
 			return false;
 		}
 		
@@ -96,6 +70,8 @@ public class Board {
 		if (!(newPlace == 27)) {
 			print();
 		}
+		
+		checkIfSomeoneWon(playerIndex);
 		return true;
 	}
 	
@@ -109,25 +85,10 @@ public class Board {
 			
 			Square square = squares.get(i);
 			
-			if (square.getPion().equals(pion)) {
-				passesRules = true;
-				
-				for (Rule rule : rules) {	
-					if (rule.getClass().getName().equalsIgnoreCase("net.marijn.senet.rules.PitFallRule")) continue;
-					if (!passesRules) break;
-					
-					rule.run(new Callback<Boolean>() {
-						
-						@Override
-						public void call(Boolean passed) {
-							passesRules = passed;
-						}
-					}, playerIndex, i + 1, (i + 1) + pointsThrown, false);
-				}
-				
-				if (passesRules) {
+			if (square.getPion().equals(pion)) {				
+				if (checkIfSetIsCorrect(playerIndex, i + 1, (i + 1) + pointsThrown, false)) {
 					answers.put(i + 1, i + 1 + pointsThrown);
-				} 				
+				}
 			}
 		}
 		
@@ -139,8 +100,7 @@ public class Board {
 				bestAnswer = entry.getKey();
 				farestSet = entry.getValue();
 			}
-		}		
-		
+		}	
 		return bestAnswer;
 	}
 	
@@ -154,25 +114,8 @@ public class Board {
 			
 			Square square = squares.get(i);
 			
-			if (square.getPion().equals(pion)) {
-				passesRules = true;
-				
-				for (Rule rule : rules) {	
-					if (rule.getClass().getName().equalsIgnoreCase("net.marijn.senet.rules.PitFallRule")) continue;
-					if (!passesRules) break;
-					
-					rule.run(new Callback<Boolean>() {
-						
-						@Override
-						public void call(Boolean passed) {
-							passesRules = passed;
-						}
-					}, playerIndex, i + 1, (i + 1) + pointsThrown, false);
-				}
-				
-				if (passesRules) {
-					break;
-				} 				
+			if (square.getPion().equals(pion)) {				
+				if (checkIfSetIsCorrect(playerIndex, i + 1, (i + 1) + pointsThrown, false)) break;	
 			}
 		}
 		
@@ -239,6 +182,41 @@ public class Board {
 			squares.add(new Square(pion));
 		}
 	}
+	
+	private boolean checkIfSetIsCorrect(int playerIndex, int oldPlace, int newPlace, boolean checkRun) {
+		passesRules = true;	
+		
+		for (Rule rule : rules) {		
+			if (checkRun && rule.getClass().getName().equalsIgnoreCase("net.marijn.senet.rules.PitFallRule")) continue;	
+			if (!passesRules) continue;
+			
+			rule.run(new Callback<Boolean>() {
+				
+				@Override
+				public void call(Boolean passed) {			
+					if (!passed) {
+						passesRules = false;
+					}
+				}
+			}, playerIndex, oldPlace, newPlace, checkRun);
+		}
+		
+		return passesRules;
+	}
+	
+	private void checkIfSomeoneWon(int playerIndex) {
+		int whitesLeft = 0;
+		int blacksLeft = 0;
+		
+		for (int i = 0; i < 30; i++ ) {
+			Square square = getSquare(i + 1);
+			
+			if (square.getPion().equals("O")) whitesLeft++;
+			else if (square.getPion().equals("X")) blacksLeft++;
+		}
+		
+		if (whitesLeft == 0 || blacksLeft == 0) senet.setWinner(getPlayers().get(playerIndex));
+	}
 
 	private void initializeTestPositions() {
 		TestPosition testPosition1 = new TestPosition();
@@ -283,4 +261,14 @@ public class Board {
 		
 		testPositions.put(3, testPosition3);
 	}	
+	
+	public ArrayList<Player> getPlayers() {
+		return senet.getPlayers();
+	}
+	
+	public Square getSquare(int index) {
+		int rightIndex = index - 1;
+		
+		return squares.get(rightIndex);
+	}
 }
