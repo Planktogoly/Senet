@@ -71,7 +71,10 @@ public class Senet {
 				System.out.println("Enter the name of the first player:");
 				String input = scanner.nextLine();
 				
-				if (input.isEmpty()) continue;
+				if (input.isEmpty()) {
+					System.out.println("Your name can't be empty!");
+					continue;
+				}
 				
 				addPlayer(input);
 				correctName = true;
@@ -82,8 +85,17 @@ public class Senet {
 				System.out.println("Enter the name of the second player:");
 				String input = scanner.nextLine();
 				
-				if (input.isEmpty()) continue;			
-				if (input.equals(players.get(0).getName())) continue;
+				if (input.isEmpty()) {
+					System.out.println("Your name can't be empty!");
+					continue;			
+				}
+				
+				String enemyName = players.get(0).getName();
+				
+				if (input.equals(enemyName)) {
+					System.out.println("Player '" +enemyName + "' already exists!");
+					continue;
+				}
 				
 				addPlayer(input);
 				correctName = true;			
@@ -94,7 +106,14 @@ public class Senet {
 				System.out.println("Enter your player name:");
 				String input = scanner.nextLine();
 				
-				if (input.isEmpty()) continue;
+				if (input.isEmpty()) {
+					System.out.println("Your name can't be empty!");
+					continue;
+				}
+				if (input.equals("Computer")) {
+					System.out.println("Player 'Computer' already exists!");
+					continue;
+				}
 				
 				addPlayer(input);
 				correctName = true;
@@ -116,12 +135,8 @@ public class Senet {
 			} else {
 				playerIndex = playerIndex == 0 ? 1 : 0;
 
-				// Wait 1 second so it is not instant
-				try {
-					Thread.sleep(500L);
-				} catch (InterruptedException e) {
-					System.out.println("ERROR: Restart the game!");
-				}
+				// Wait 1 second. We dont want it to be instant!
+				Utils.sleep(1000L);
 			}
 		}
 
@@ -186,11 +201,8 @@ public class Senet {
 				
 				board.set(playerIndex, answer, answer + pointsThrown, pointsThrown);
 				
-				try {
-					Thread.sleep(2000L);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+				// Wait 2 seconds. We dont want it to be instant!
+				Utils.sleep(2000L);
 			}
 			
 			checkIfSomeoneWon();
