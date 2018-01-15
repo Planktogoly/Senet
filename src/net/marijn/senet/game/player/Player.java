@@ -6,6 +6,8 @@ public class Player {
 	
 	private String pawn;
 	
+	private int turns = 0;
+	
 	public Player(String name) {
 		this.name = name;
 	}
@@ -22,5 +24,11 @@ public class Player {
 		return name;
 	}
 	
-
+	public void addTurn() {
+		turns++;
+	}
+	
+	public int getTurns() {
+		return turns;
+	}
 }

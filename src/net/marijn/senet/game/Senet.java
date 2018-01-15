@@ -23,6 +23,9 @@ public class Senet {
 	
 	private int playerIndex;
 	private Player winner;
+	private Player loser;
+	
+	private long startTime;
 
 	public Senet() {
 		this.players = new ArrayList<>();
@@ -50,6 +53,21 @@ public class Senet {
 		
 		System.out.println("<------------------------->");
 		System.out.println(winner.getName() + " has won the game!");
+		System.out.println(" ");
+		long endTime = System.currentTimeMillis() - startTime;
+		System.out.println("He won the game within " + (endTime / 1000) + " seconds and with " + winner.getTurns() + " turns!");
+		
+		int differenceInTurns = winner.getTurns() - loser.getTurns();
+		
+		if (differenceInTurns < 0) {
+			System.out.println("That is " + (differenceInTurns * -1) + " less than his enemy!");
+		} else {
+			System.out.println("That is " + differenceInTurns + " more than his enemy!");
+		}
+		
+		System.out.println(" ");
+		System.out.println("Thank you for playing this verions of the game Senet!");
+		System.out.println("Made by Marijn Dame.");
 	}	
 	
 	/**
@@ -138,6 +156,8 @@ public class Senet {
 	 * In this method we choose who is going to start first.
 	 */
 	private void startGame() {
+		startTime = System.currentTimeMillis();		
+		
 		boolean rightPoints = false;
 		while (!rightPoints) {
 			int thrownSticks = Dice.throwSticks();
@@ -215,16 +235,19 @@ public class Senet {
 					int answer = board.getBestSet(playerIndex, -pointsThrown);
 					
 					board.set(playerIndex, answer, answer - pointsThrown);
+					player.addTurn();
 				}			
 			} else {
 				int answer = board.getBestSet(playerIndex, pointsThrown);
 				
-				System.out.println(player.getName() + " (" + pawn + "), which piece do you want to move? " + answer);
+				System.out.println(player.getName() + " (" + pawn + "), which piece do you want to move?");
 				
-				// Wait 3 seconds. We dont want it to be instant!
-				Utils.sleep(3000L);
+				// Wait 2 seconds. We dont want it to be instant!
+				Utils.sleep(2000L);
+				System.out.println(answer);
 				
 				board.set(playerIndex, answer, answer + pointsThrown);
+				player.addTurn();
 			}
 			
 			if (pointsThrown == 2 || pointsThrown == 3) playerIndex = playerIndex == 0 ? 1 : 0;			
@@ -259,7 +282,10 @@ public class Senet {
 						continue;
 					}
 					
-					if (board.set(playerIndex, answer, answer - pointsThrown)) rightAnswer = true;
+					if (board.set(playerIndex, answer, answer - pointsThrown)) {
+						rightAnswer = true;
+						player.addTurn();					
+					}
 				}
 			}			
 		} else {
@@ -279,7 +305,10 @@ public class Senet {
 					continue;
 				}
 				
-				if (board.set(playerIndex, answer, answer + pointsThrown)) rightAnswer = true;
+				if (board.set(playerIndex, answer, answer + pointsThrown)) {
+					rightAnswer = true;
+					player.addTurn();
+				}
 			}
 		}
 		
@@ -317,6 +346,10 @@ public class Senet {
 	
 	public void setWinner(Player player) {
 		this.winner = player;
+	}
+	
+	public void setLoser(Player player) {
+		this.loser = player;
 	}
 	
 	public int getTestPosition() {

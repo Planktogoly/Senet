@@ -136,7 +136,10 @@ public class Board {
 		passesRules = true;	
 		
 		for (int i = 0; i < 30; i++) {
-			if ((i + 1) + pointsThrown > 30 || (i + 1) + pointsThrown < 1) continue;
+			if ((i + 1) + pointsThrown > 30 || (i + 1) + pointsThrown < 1) {
+				passesRules = false;
+				continue;
+			}
 			
 			Square square = squares.get(i);
 			
@@ -261,7 +264,10 @@ public class Board {
 			else if (square.getPawn().equals("X")) blacksLeft++;
 		}
 		
-		if (whitesLeft == 0 || blacksLeft == 0) senet.setWinner(getPlayers().get(playerIndex));
+		if (whitesLeft == 0 || blacksLeft == 0) {
+			senet.setWinner(getPlayers().get(playerIndex));
+			senet.setLoser(getPlayers().get(playerIndex == 0 ? 1 : 0));
+		}
 	}
 
 	private void initializeTestPositions() {
