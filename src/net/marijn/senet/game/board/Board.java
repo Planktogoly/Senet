@@ -10,9 +10,9 @@ import net.marijn.senet.game.player.Player;
 import net.marijn.senet.rules.AttackRule;
 import net.marijn.senet.rules.BlockadeRule;
 import net.marijn.senet.rules.CantBeAttackedRule;
-import net.marijn.senet.rules.CantBeYourPionRule;
-import net.marijn.senet.rules.NeedsToBeYourPionRule;
-import net.marijn.senet.rules.NeedsToHaveAPionRule;
+import net.marijn.senet.rules.CantBeYourpawnRule;
+import net.marijn.senet.rules.NeedsToBeYourpawnRule;
+import net.marijn.senet.rules.NeedsToHaveApawnRule;
 import net.marijn.senet.rules.OutsideTheBoardRule;
 import net.marijn.senet.rules.PitFallRule;
 import net.marijn.senet.rules.Rule;
@@ -27,6 +27,8 @@ public class Board {
 
 	private HashMap<Integer, TestPosition> testPositions;
 	
+	private boolean passesRules = true;
+	
 	public Board(Senet senet) {
 		this.senet = senet;
 		
@@ -34,22 +36,30 @@ public class Board {
 		this.rules = new ArrayList<>();
 		this.testPositions = new HashMap<>();
 		
-		rules.add(new NeedsToHaveAPionRule(this));
-		rules.add(new NeedsToBeYourPionRule(this));
+		rules.add(new NeedsToHaveApawnRule(this));
+		rules.add(new NeedsToBeYourpawnRule(this));
 		rules.add(new OutsideTheBoardRule(this));
 		rules.add(new AttackRule(this));
 		rules.add(new BlockadeRule(this));
 		rules.add(new PitFallRule(this));
 		rules.add(new CantBeAttackedRule(this));
-		rules.add(new CantBeYourPionRule(this));
+		rules.add(new CantBeYourpawnRule(this));
 		
 		initializeTestPositions();
 		createBoard();
 	}	
 	
-	private boolean passesRules = true;
 	
-	public boolean set(int playerIndex, int oldPlace, int newPlace, int sticks) {		
+	
+	/**
+	 * Change the pawn from his old place to his new place 
+	 * 
+	 * @param playerIndex
+	 * @param oldPlace
+	 * @param newPlace
+	 * @return if the pawn changed his position
+	 */
+	public boolean set(int playerIndex, int oldPlace, int newPlace) {		
 		if (!checkIfSetIsCorrect(playerIndex, oldPlace, newPlace, true)) {
 			return false;
 		}
@@ -57,26 +67,35 @@ public class Board {
 		Square oldSquare = getSquare(oldPlace);
 		Square newSquare = getSquare(newPlace);
 		
-		String newPion = newSquare.getPion();
-		String oldPion = oldSquare.getPion();
+		String newpawn = newSquare.getPawn();
+		String oldpawn = oldSquare.getPawn();
 		
-		newSquare.setPion(oldPion);
-		oldSquare.setPion(newPion);
+		newSquare.setPawn(oldpawn);
+		oldSquare.setPawn(newpawn);
 		
 		if (newPlace == 30) {
-			newSquare.setPion(".");
+			newSquare.setPawn(".");
 		}
 		
 		if (!(newPlace == 27)) {
 			print();
 		}
 		
-		checkIfSomeoneWon(playerIndex);
+		checkIfAPlayerWon(playerIndex);
 		return true;
 	}
 	
+	/**
+	 * We calculate the best place for the computer to go to.
+	 * 
+	 * The best place is the farthest place a pawn can go.
+	 * 
+	 * @param playerIndex
+	 * @param pointsThrown
+	 * @return best place
+	 */
 	public int getBestSet(int playerIndex, int pointsThrown) {
-		String pion = getPlayers().get(playerIndex).getPion();
+		String pawn = getPlayers().get(playerIndex).getPawn();
 		
 		HashMap<Integer, Integer> answers = new HashMap<>();
 		
@@ -85,7 +104,7 @@ public class Board {
 			
 			Square square = squares.get(i);
 			
-			if (square.getPion().equals(pion)) {				
+			if (square.getPawn().equals(pawn)) {				
 				if (checkIfSetIsCorrect(playerIndex, i + 1, (i + 1) + pointsThrown, false)) {
 					answers.put(i + 1, i + 1 + pointsThrown);
 				}
@@ -104,8 +123,15 @@ public class Board {
 		return bestAnswer;
 	}
 	
-	public boolean checkifPlayerCanSetAPion(int playerIndex, int pointsThrown) {
-		String pion = getPlayers().get(playerIndex).getPion();
+	/**
+	 * Check if a player can set a pawn
+	 * 
+	 * @param playerIndex
+	 * @param pointsThrown
+	 * @return if a player can place a set
+	 */
+	public boolean checkifPlayerCanSetApawn(int playerIndex, int pointsThrown) {
+		String pawn = getPlayers().get(playerIndex).getPawn();
 		
 		passesRules = true;	
 		
@@ -114,7 +140,7 @@ public class Board {
 			
 			Square square = squares.get(i);
 			
-			if (square.getPion().equals(pion)) {				
+			if (square.getPawn().equals(pawn)) {				
 				if (checkIfSetIsCorrect(playerIndex, i + 1, (i + 1) + pointsThrown, false)) break;	
 			}
 		}
@@ -122,6 +148,9 @@ public class Board {
 		return passesRules;
 	}
 
+	/**
+	 * Print the game board
+	 */
 	public void print() {
 		System.out.println("+---------------------+");
 
@@ -129,7 +158,7 @@ public class Board {
 		for (int i = 0; i < squares.size() - 20; i++) {
 			Square square = squares.get(i);
 
-			System.out.print(square.getPion() + " ");
+			System.out.print(square.getPawn() + " ");
 		}
 		
 		System.out.print("|");
@@ -139,7 +168,7 @@ public class Board {
 		for (int i = 19; i >= squares.size() - 20; i--) {
 			Square square = squares.get(i);
 
-			System.out.print(square.getPion() + " ");
+			System.out.print(square.getPawn() + " ");
 		}
 		
 		System.out.print("|");
@@ -149,7 +178,7 @@ public class Board {
 		for (int i = 20; i < squares.size(); i++) {
 			Square square = squares.get(i);
 
-			System.out.print(square.getPion() + " ");
+			System.out.print(square.getPawn() + " ");
 		}
 
 		System.out.print("|");
@@ -157,6 +186,9 @@ public class Board {
 		System.out.println("+---------------------+");
 	}
 	
+	/**
+	 * Create the board whether it is a test position or not
+	 */
 	public void createBoard() {
 		squares.clear();
 		
@@ -167,22 +199,31 @@ public class Board {
 		if (testPositionInt >= 1) testPosition = testPositions.get(senet.getTestPosition());
 		
 		for (int i = 0; i < 30; i++) {
-			String pion = ".";
+			String pawn = ".";
 
 			if (testPosition != null) {
-				String testPion = testPosition.getPionOnPlace(i);
+				String testpawn = testPosition.getpawnOnPlace(i);
 				
-				if (testPion != null) pion = testPion;
+				if (testpawn != null) pawn = testpawn;
 			} else {
 				if (i < 10 && i % 2 == 0)
-					pion = "O";
+					pawn = "O";
 				else if (i < 10 && !(i % 2 == 0))
-					pion = "X";
+					pawn = "X";
 			}
-			squares.add(new Square(pion));
+			squares.add(new Square(pawn));
 		}
 	}
 	
+	/**
+	 * Check if the set a player wants to make is correct by the Senet rules.
+	 * 
+	 * @param playerIndex
+	 * @param oldPlace
+	 * @param newPlace
+	 * @param checkRun
+	 * @return if the set is correct by the Senet rules
+	 */
 	private boolean checkIfSetIsCorrect(int playerIndex, int oldPlace, int newPlace, boolean checkRun) {
 		passesRules = true;	
 		
@@ -204,15 +245,20 @@ public class Board {
 		return passesRules;
 	}
 	
-	private void checkIfSomeoneWon(int playerIndex) {
+	/**
+	 * Set the winner if there is one
+	 * 
+	 * @param playerIndex
+	 */
+	private void checkIfAPlayerWon(int playerIndex) {
 		int whitesLeft = 0;
 		int blacksLeft = 0;
 		
 		for (int i = 0; i < 30; i++ ) {
 			Square square = getSquare(i + 1);
 			
-			if (square.getPion().equals("O")) whitesLeft++;
-			else if (square.getPion().equals("X")) blacksLeft++;
+			if (square.getPawn().equals("O")) whitesLeft++;
+			else if (square.getPawn().equals("X")) blacksLeft++;
 		}
 		
 		if (whitesLeft == 0 || blacksLeft == 0) senet.setWinner(getPlayers().get(playerIndex));

@@ -6,6 +6,11 @@ import net.marijn.senet.utils.Callback;
 
 public class PitFallRule extends Rule {
 
+	/**
+	 * There is a pitfall a player can fall in. It is on square #30
+	 * 
+	 * @param board
+	 */
 	public PitFallRule(Board board) {
 		super(board);
 	}
@@ -21,7 +26,7 @@ public class PitFallRule extends Rule {
 				if (!newPlaceSquare.isEmpty()) continue;
 				
 				if (checkRun) {					
-					board.set(playerIndex, oldSquare, i + 1, 0);
+					board.set(playerIndex, oldSquare, i + 1);
 					callback.call(true);
 				} else {
 					callback.call(false);

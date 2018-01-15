@@ -7,6 +7,11 @@ import net.marijn.senet.utils.Callback;
 
 public class LastLineRule extends Rule {
 
+	/**
+	 * You can't go to place 30 if there are pawns not in the last line
+	 * 
+	 * @param board
+	 */
 	public LastLineRule(Board board) {
 		super(board);
 	}
@@ -15,16 +20,16 @@ public class LastLineRule extends Rule {
 	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare, boolean checkRun) {
 		if (newSquare == 30) {
 			Player player = board.getPlayers().get(playerIndex);			
-			String pion = player.getPion();
+			String pawn = player.getPawn();
 			
-			boolean hasAllPionsInLastLine = true;
+			boolean hasAllpawnsInLastLine = true;
 			for (int i = 0; i < 19; i++) {
 				Square square = board.getSquare(i);	
 				
-				if (square.getPion().equals(pion)) hasAllPionsInLastLine = false;
+				if (square.getPawn().equals(pawn)) hasAllpawnsInLastLine = false;
 			}
 			
-			if (!hasAllPionsInLastLine) {
+			if (!hasAllpawnsInLastLine) {
 				callback.call(false);
 				return;
 			}

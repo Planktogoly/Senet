@@ -2,6 +2,11 @@ package net.marijn.senet.game.dice;
 
 public class Dice {
 	
+	/**
+	 * Throw the dice of Senet
+	 * 
+	 * @return either 1, 2, 3, 4 or 6
+	 */
 	public static int throwSticks() {		
 		int whiteSticks = 0;
 		

@@ -4,18 +4,18 @@ public class Player {
 	
 	private String name;
 	
-	private String pion;
+	private String pawn;
 	
 	public Player(String name) {
 		this.name = name;
 	}
 	
-	public String getPion() {
-		return pion;
+	public String getPawn() {
+		return pawn;
 	}
 	
-	public void setPion(String pion) {
-		this.pion = pion;
+	public void setPawn(String pawn) {
+		this.pawn = pawn;
 	}
 	
 	public String getName() {

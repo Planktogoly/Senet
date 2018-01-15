@@ -6,13 +6,18 @@ import net.marijn.senet.utils.Callback;
 
 public class BlockadeRule extends Rule {
 
+	/**
+	 * You can't move over three or more of your enemies pawn
+	 * 
+	 * @param board
+	 */
 	public BlockadeRule(Board board) {
 		super(board);
 	}
 
 	@Override
 	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare, boolean checkRun) {
-		String enemyPion = board.getPlayers().get(playerIndex == 0 ? 1 : 0).getPion();
+		String enemypawn = board.getPlayers().get(playerIndex == 0 ? 1 : 0).getPawn();
 		
 		int count = 0;
 		for (int i = oldSquare + 1; i < newSquare; i++) {
@@ -21,9 +26,9 @@ public class BlockadeRule extends Rule {
 			
 			Square placeOnBoard = board.getSquare(i);
 
-			if (count > 0 && placeOnBoard.getPion().equals(".")) break;
+			if (count > 0 && placeOnBoard.getPawn().equals(".")) break;
 			
-			if (placeOnBoard.getPion().equals(enemyPion)) {
+			if (placeOnBoard.getPawn().equals(enemypawn)) {
 				count++;
 			}
 		}

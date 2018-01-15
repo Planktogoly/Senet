@@ -6,6 +6,11 @@ import net.marijn.senet.utils.Callback;
 
 public class AttackRule extends Rule {
 
+	/**
+	 * You can't attack a pawn if there is two or more next to each other
+	 * 
+	 * @param board
+	 */
 	public AttackRule(Board board) {
 		super(board);
 	}
@@ -19,15 +24,15 @@ public class AttackRule extends Rule {
 		
 		Square newPlace = board.getSquare(newSquare);
 		
-		String pion = newPlace.getPion();
-		if (!pion.equals(".") && !pion.equals(board.getPlayers().get(playerIndex).getPion())) {
+		String pawn = newPlace.getPawn();
+		if (!pawn.equals(".") && !pawn.equals(board.getPlayers().get(playerIndex).getPawn())) {
 			Square leftOfNewPlace = null;
 			Square rightOfNewPlace = null;
 			
 			if (newSquare != 1) leftOfNewPlace = board.getSquare(newSquare - 1);
 			if (newSquare != 30) rightOfNewPlace = board.getSquare(newSquare + 1);
 			
-			if ((leftOfNewPlace != null && leftOfNewPlace.getPion().equals(pion)) || (rightOfNewPlace !=null && rightOfNewPlace.getPion().equals(pion))) {
+			if ((leftOfNewPlace != null && leftOfNewPlace.getPawn().equals(pawn)) || (rightOfNewPlace !=null && rightOfNewPlace.getPawn().equals(pawn))) {
 				if (checkRun) System.out.println("Attack on safe piece: " + newSquare);
 				callback.call(false);
 				return;

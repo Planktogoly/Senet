@@ -33,6 +33,9 @@ public class Senet {
 		this.playerIndex = 0;
 	}
 
+	/**
+	 * Play a game of Senet
+	 */
 	public void play() {
 		System.out.println("Welcome to Senet!");
 		System.out.println("<------------------------->");
@@ -47,8 +50,15 @@ public class Senet {
 		
 		System.out.println("<------------------------->");
 		System.out.println(winner.getName() + " has won the game!");
-	}
+	}	
 	
+	/**
+	 *  Setup a game of Senet
+	 *  
+	 *  In this method you choose if you want to play a normal game or to start on a test position,
+	 *  you choose what gamemode you want to player
+	 *  and you fill your player name(s) in.
+	 */
 	private void setupSenet() {
 		while (!testGame && testPosition == 0) {
 			System.out.println("Would you like to start a normal game (0) or start on a test position (1-3)?");
@@ -122,6 +132,12 @@ public class Senet {
 		}
 	}
 	
+	
+	/**
+	 * Start of a game Senet
+	 * 
+	 * In this method we choose who is going to start first.
+	 */
 	private void startGame() {
 		boolean rightPoints = false;
 		while (!rightPoints) {
@@ -141,64 +157,74 @@ public class Senet {
 
 		System.out.println(players.get(playerIndex).getName() + " starts the game!");
 
-		players.get(playerIndex).setPion("X");
+		players.get(playerIndex).setPawn("X");
 		
 		if (testPosition == -1) {
-			board.set(playerIndex, 10, 11, 0);
+			board.set(playerIndex, 10, 11);
 			
 			playerIndex = playerIndex == 0 ? 1 : 0;
 
 			Player player = players.get(playerIndex);
 
-			player.setPion("O");
+			String pawn = "O";
+			
+			player.setPawn(pawn);
+			
+			
 			
 			if (player.getName().equalsIgnoreCase("Computer")) {
 				int thrownPoints = Dice.throwSticks();
-				System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + thrownPoints);
-				board.set(playerIndex, 9, 9 + thrownPoints, thrownPoints);
+				System.out.println(player.getName() + " (" + pawn + "), you have thrown " + thrownPoints);
+				board.set(playerIndex, 9, 9 + thrownPoints);
 				playerIndex = playerIndex == 0 ? 1 : 0;				
 			} else {
-				System.out.println(player.getName() + " (" + player.getPion() + "), press <ENTER> to throw the dice");
+				System.out.println(player.getName() + " (" + pawn + "), press <ENTER> to throw the dice");
 				scanner.nextLine();
 
 				int thrownPoints = Dice.throwSticks();
-				System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + thrownPoints);
-				board.set(playerIndex, 9, 9 + thrownPoints, thrownPoints);
+				System.out.println(player.getName() + " (" + pawn + "), you have thrown " + thrownPoints);
+				board.set(playerIndex, 9, 9 + thrownPoints);
 				playerIndex = playerIndex == 0 ? 1 : 0;
 			}
 		} else {
 			playerIndex = playerIndex == 0 ? 1 : 0;
 			Player player = players.get(playerIndex);
-			player.setPion("O");
+			player.setPawn("O");
 			
 			board.createBoard();
 			board.print();
 		}
 	}
 	
+	
+	/**
+	 * Play a turn in a game of Senet
+	 * 
+	 */
 	private void playTurn() {
 		Player player = players.get(playerIndex);
+		String pawn = player.getPawn();
 		
 		if (player.getName().equals("Computer")) {
 			int pointsThrown = Dice.throwSticks();
-			System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + pointsThrown);
+			System.out.println(player.getName() + " (" + pawn + "), you have thrown " + pointsThrown);
 			
-			if (!board.checkifPlayerCanSetAPion(playerIndex, pointsThrown)) {
-				System.out.println("The computer can't set a pion! Checking for a backwards turn...");
+			if (!board.checkifPlayerCanSetApawn(playerIndex, pointsThrown)) {
+				System.out.println("The computer can't set a pawn! Checking for a backwards turn...");
 				
-				if (!board.checkifPlayerCanSetAPion(playerIndex, -pointsThrown)) {
-					System.out.println("The computer can't set a pion!");
+				if (!board.checkifPlayerCanSetApawn(playerIndex, -pointsThrown)) {
+					System.out.println("The computer can't set a pawn!");
 				} else {
 					int answer = board.getBestSet(playerIndex, -pointsThrown);
 					
-					board.set(playerIndex, answer, answer - pointsThrown, -pointsThrown);
+					board.set(playerIndex, answer, answer - pointsThrown);
 				}			
 			} else {
 				int answer = board.getBestSet(playerIndex, pointsThrown);
 				
-				System.out.println(player.getName() + " (" + player.getPion() + "), which piece do you want to move? " + answer);
+				System.out.println(player.getName() + " (" + pawn + "), which piece do you want to move? " + answer);
 				
-				board.set(playerIndex, answer, answer + pointsThrown, pointsThrown);
+				board.set(playerIndex, answer, answer + pointsThrown);
 				
 				// Wait 2 seconds. We dont want it to be instant!
 				Utils.sleep(2000L);
@@ -208,21 +234,21 @@ public class Senet {
 			return;
 		}		
 		
-		System.out.println(player.getName() + " (" + player.getPion() + "), press <ENTER> to throw the dice");
+		System.out.println(player.getName() + " (" + pawn + "), press <ENTER> to throw the dice");
 		scanner.nextLine();
 
 		int pointsThrown = Dice.throwSticks();
-		System.out.println(player.getName() + " (" + player.getPion() + "), you have thrown " + pointsThrown);
+		System.out.println(player.getName() + " (" + pawn + "), you have thrown " + pointsThrown);
 		
-		if (!board.checkifPlayerCanSetAPion(playerIndex, pointsThrown)) {
-			System.out.println("You can't set a pion! Checking for a backwards turn...");
+		if (!board.checkifPlayerCanSetApawn(playerIndex, pointsThrown)) {
+			System.out.println("You can't set a pawn! Checking for a backwards turn...");
 			
-			if (!board.checkifPlayerCanSetAPion(playerIndex, -pointsThrown)) {
-				System.out.println("You can't set a pion!");
+			if (!board.checkifPlayerCanSetApawn(playerIndex, -pointsThrown)) {
+				System.out.println("You can't set a pawn!");
 			} else {
 				boolean rightAnswer = false;
 				while (!rightAnswer) {
-					System.out.println(player.getName() + " (" + player.getPion() + "), which piece do you want to move?");
+					System.out.println(player.getName() + " (" + pawn + "), which piece do you want to move?");
 					String rawAnswer = scanner.nextLine();
 					
 					int answer = Utils.isAnswerANumber(rawAnswer);
@@ -233,13 +259,13 @@ public class Senet {
 						continue;
 					}
 					
-					if (board.set(playerIndex, answer, answer - pointsThrown, -pointsThrown)) rightAnswer = true;
+					if (board.set(playerIndex, answer, answer - pointsThrown)) rightAnswer = true;
 				}
 			}			
 		} else {
 			boolean rightAnswer = false;
 			while (!rightAnswer) {
-				System.out.println(player.getName() + " (" + player.getPion() + "), which piece do you want to move?");
+				System.out.println(player.getName() + " (" + pawn + "), which piece do you want to move?");
 				String rawAnswer = scanner.nextLine();
 				
 				int answer = Utils.isAnswerANumber(rawAnswer);
@@ -250,13 +276,18 @@ public class Senet {
 					continue;
 				}
 				
-				if (board.set(playerIndex, answer, answer + pointsThrown, pointsThrown)) rightAnswer = true;
+				if (board.set(playerIndex, answer, answer + pointsThrown)) rightAnswer = true;
 			}
 		}
 		
 		if (pointsThrown == 2 || pointsThrown == 3) playerIndex = playerIndex == 0 ? 1 : 0;
 	}
 
+	/**
+	 * Here we set if the game is a testgame or not
+	 * 
+	 * @param rawAnswer
+	 */
 	private void setTestGame(String rawAnswer) {
 		int answer = Utils.isAnswerANumber(rawAnswer);
 

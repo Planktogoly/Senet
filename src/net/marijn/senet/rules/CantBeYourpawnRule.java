@@ -4,9 +4,14 @@ import net.marijn.senet.game.board.Board;
 import net.marijn.senet.game.player.Player;
 import net.marijn.senet.utils.Callback;
 
-public class NeedsToBeYourPionRule extends Rule {
+public class CantBeYourpawnRule extends Rule {
 
-	public NeedsToBeYourPionRule(Board board) {
+	/**
+	 * You can't attack your own pawn
+	 * 
+	 * @param board
+	 */
+	public CantBeYourpawnRule(Board board) {
 		super(board);
 	}
 
@@ -14,13 +19,13 @@ public class NeedsToBeYourPionRule extends Rule {
 	public void run(Callback<Boolean> callback, int playerIndex, int oldSquare, int newSquare, boolean checkRun) {
 		Player player = board.getPlayers().get(playerIndex);
 		
-		if (!player.getPion().equals(board.getSquare(oldSquare).getPion())) {
-			if (checkRun) System.out.println("You don't have a piece on square " + oldSquare + ". You are " + player.getPion() + "!");
+		if (player.getPawn().equals(board.getSquare(newSquare).getPawn())) {
+			if (checkRun) System.out.println("You can't attack your own pawn!");
 			callback.call(false);
 			return;
 		}
 		
-		callback.call(true);		
+		callback.call(true);			
 	}
 
 }

@@ -10,11 +10,11 @@ public class TestPosition {
 		board = new HashMap<>();		
 	}
 	
-	public void addPosition(int place, String pion) {
-		board.put(place, pion);
+	public void addPosition(int place, String pawn) {
+		board.put(place, pawn);
 	}
 	
-	public String getPionOnPlace(int place) {
+	public String getpawnOnPlace(int place) {
 		return board.get(place);
 	}
 	

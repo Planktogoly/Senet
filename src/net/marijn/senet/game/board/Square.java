@@ -2,22 +2,22 @@ package net.marijn.senet.game.board;
 
 public class Square {
 
-	private String pion;
+	private String pawn;
 	
-	public Square(String pion) {
-		this.pion = pion;
+	public Square(String pawn) {
+		this.pawn = pawn;
 	}
 	
-	public String getPion() {
-		return pion;
+	public String getPawn() {
+		return pawn;
 	}
 	
-	public void setPion(String pion) {
-		this.pion = pion;
+	public void setPawn(String pawn) {
+		this.pawn = pawn;
 	}
 	
 	public boolean isEmpty() {
-		return ".".equals(pion);
+		return ".".equals(pawn);
 	}
 	
 	
